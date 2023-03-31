@@ -182,24 +182,23 @@ app.on('ready', async () => {
           // get data
           for (const sl of selectorArray) {
             try {
-              // wait for selector
-              await scraper.doWaitSelector('.race_table_01', 1000);
+              if (await scraper.detectPage('.race_table_01')) {
+                // wait for selector
+                await scraper.doWaitSelector('.race_table_01', 1000);
+                // acquired data
+                const scrapedData: string = await scraper.doSingleEval(sl, 'textContent');
 
-              // acquired data
-              const scrapedData: string = await scraper.doSingleEval(sl, 'textContent');
-
-              // data exists
-              if (scrapedData != '') {
-                tmpArray.push(scrapedData);
+                // data exists
+                if (scrapedData != '') {
+                  tmpArray.push(scrapedData);
+                }
+                // wait for 100ms
+                await scraper.doWaitFor(100);
+                // push into final array
+                resultArray.push(tmpArray);
+                // wait for 100ms
+                scraper.doWaitFor(100);
               }
-              // wait for 100ms
-              await scraper.doWaitFor(100);
-
-              // push into final array
-              resultArray.push(tmpArray);
-
-              // wait for 100ms
-              scraper.doWaitFor(100);
 
             } catch (e: unknown) {
               console.log(e);
